@@ -1,0 +1,10 @@
+server:
+  servlet:
+    context-path: /api/v1
+  port: 8081
+app:
+  datasource:
+    jdbc-url: jdbc:postgresql://host.docker.internal:5433/student
+    username: postgres
+    password: pass
+    pool-size: 30
