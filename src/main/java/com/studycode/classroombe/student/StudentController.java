@@ -1,10 +1,7 @@
 package com.studycode.classroombe.student;
 
 import lombok.AllArgsConstructor;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -14,8 +11,12 @@ import java.util.List;
 public class StudentController {
     private final StudentService studentService;
     @GetMapping
-    public List<Student> GetAllStudents(){
+    public List<Student> getAllStudents(){
         return studentService.getAllStudents();
+    }
+    @PostMapping
+    public void addNewStudent(@RequestBody CreateStudentDto student){
+        System.out.println(student);
     }
 
 }

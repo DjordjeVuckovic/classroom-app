@@ -6,8 +6,7 @@ import lombok.Data;
 import java.util.UUID;
 @Data
 @Builder
-public class StudentDto {
-    private  UUID studentId;
+public class CreateStudentDto {
     private  String firstName;
     private  String lastName;
     private  String email;
