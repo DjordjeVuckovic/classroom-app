@@ -2,10 +2,14 @@ import React from "react";
 import {Formik, useFormik} from "formik";
 import * as Yup from 'yup';
 import {Button, Input, Tag} from "antd";
+import {createStudent} from "../client/StudentClient";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
+import {errorNotification, successNotification} from "../common/Notification";
 
-export const AddStudentForm = () => {
+export const AddStudentForm = ({addStudent,onSuccess}) => {
     const marginStyle = {marginBottom:'15px'}
-    const tagStyle = {backgroundColor:'#f50',color:'white',...marginStyle}
+    const tagStyle = {backgroundColor:'#f51',color:'white',...marginStyle}
     const formik = useFormik({
         initialValues: {
             firstName: '',
@@ -21,10 +25,21 @@ export const AddStudentForm = () => {
                 .max(20, 'Must be 20 characters or less')
                 .required('Last name required'),
             email: Yup.string().email('Invalid email address').required('Email required'),
-            gender: Yup.string().required('Required')
+            gender: Yup.string().required('Required').oneOf(['male','female','MALE','FEMALE'],'Invalid gender')
         }),
         onSubmit: values => {
-            alert(JSON.stringify(values, null, 2));
+            createStudent(values)
+                .then(_ => {
+                addStudent(values)
+                onSuccess()
+                    successNotification("Success","You are successfully added student")
+            })
+                .catch(error => {
+                    console.log(error)
+                    const message = "Error"
+                    const description = error.response.data.message
+                    errorNotification(message,description)
+                });
         },
     });
     return (
@@ -40,7 +55,7 @@ export const AddStudentForm = () => {
             {formik.touched.firstName && formik.errors.firstName ? (
                 <Tag style={tagStyle}>{formik.errors.firstName}</Tag>
             ) : null}
-
+            <div>
             <label style={marginStyle} htmlFor="lastName">Last Name</label>
             <Input id="lastName"
                    style={marginStyle}
@@ -50,7 +65,7 @@ export const AddStudentForm = () => {
             {formik.touched.lastName && formik.errors.lastName ? (
                 <Tag style={tagStyle}>{formik.errors.lastName}</Tag>
             ) : null}
-
+            </div>
             <label htmlFor="email">Email Address</label>
             <Input id="email" type="email"
                    style={marginStyle}
@@ -59,6 +74,7 @@ export const AddStudentForm = () => {
             {formik.touched.email && formik.errors.email ? (
                 <Tag style={tagStyle}>{formik.errors.email}</Tag>
             ) : null}
+            <div>
             <label htmlFor="gender">Gender</label>
             <Input id="gender"
                    style={marginStyle}
@@ -67,8 +83,9 @@ export const AddStudentForm = () => {
             {formik.touched.gender && formik.errors.gender ? (
                 <Tag style={tagStyle}>{formik.errors.gender}</Tag>
             ) : null}
+            </div>
 
-            <Button type="primary" htmlType="submit" style={marginStyle}>Submit</Button>
+            <Button type="primary" htmlType="submit" style={marginStyle} disabled={!formik.isValid}>Submit</Button>
         </form>
     );
 }

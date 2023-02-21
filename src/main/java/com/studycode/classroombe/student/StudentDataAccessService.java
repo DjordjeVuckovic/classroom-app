@@ -12,7 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class StudentDataAccessService {
     private final JdbcTemplate jdbcTemplate;
-    public List<Student> selectAllStudents(){
+     List<Student> selectAllStudents(){
         String sql = ""+
                 "select student_id," +
                 "first_name," +
@@ -40,5 +40,24 @@ public class StudentDataAccessService {
                     .gender(genderConv)
                     .build();
         };
+    }
+
+     int insertStudent(Student student) {
+        String sql = "" +
+                "insert into student(" +
+                "student_id," +
+                "first_name," +
+                "last_name," +
+                "email," +
+                "gender)" +
+                " values (?,?,?,?,?)";
+        return jdbcTemplate.update(
+                sql,
+                student.getStudentId(),
+                student.getFirstName(),
+                student.getLastName(),
+                student.getEmail(),
+                student.getGender().name()
+                );
     }
 }

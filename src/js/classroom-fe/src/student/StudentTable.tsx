@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {getAllStudents} from "../client/StudentClient";
 import {IStudent} from "./Student";
-import {Table, Spin, Modal} from "antd";
+import {Table, Spin, Modal, Empty} from "antd";
 import {Container} from "../common/Container";
 import {Footer} from "./Footer";
 import {AddStudentForm} from "./AddStudentForm";
+import {errorNotification} from "../common/Notification";
 
 export const StudentTable = () => {
     const [students,setStudents] = useState<IStudent[]>([])
@@ -33,45 +34,69 @@ export const StudentTable = () => {
         },
     ];
     useEffect(()=>{
-        getAllStudents().then(data=>{
-            setStudents(data)
-            setLoading(false)
+        getAllStudents()
+            .then(
+            value => {
+                setStudents(value.data)
+                setLoading(false)
+            })
+            .catch(error => {
+                setLoading(true)
+                const message = error.message
+                const description = error.response.data.message
+                errorNotification(message,description)
+                console.log(error)
+            })
         }
-        )
-    },[])
+    ,[])
     function openAddStudentModal() {
         setIsModalOpen(true)
     }
     function closeAddStudentModal() {
         setIsModalOpen(false)
     }
+
+    function addStudent(student) {
+        setStudents([...students,student])
+    }
+    const createStudentElement = () => {
+        return <div>
+            <Modal
+                title='Add new student'
+                open={isModalOpen}
+                onOk={closeAddStudentModal}
+                onCancel={closeAddStudentModal}
+                width={800}
+                >
+                <AddStudentForm addStudent={addStudent} onSuccess={()=> closeAddStudentModal()}/>
+            </Modal>
+            <Footer numberOfStudent={students.length} onClick={openAddStudentModal}/>
+        </div>
+    }
+    if(loading){
+        return (
+            <Spin style={{marginTop:"20px"}}/>
+        )
+    }
+    if(students.length === 0){
+        return (
+            <Container>
+                <Empty description={<h1 style={{color:"white"}}>No student found</h1>}/>
+                {createStudentElement()}
+            </Container>
+        )
+    }
     return (
         <Container>
-            {loading ?
-                <Spin/> :
-                <div>
-                    <Table
-                        style={{backgroundColor:"#23395d",color:"white"}}
-                        dataSource={students}
-                        columns={columns}
-                        rowKey='studentId'
-                        loading={loading}
-                        bordered={true}
-                    />
-                    <Modal
-                        title='Add new student'
-                        open={isModalOpen}
-                        onOk={closeAddStudentModal}
-                        onCancel={closeAddStudentModal}
-                        width={1000}
-                        >
-                        <AddStudentForm/>
-                    </Modal>
-                    <Footer numberOfStudent={students.length} onClick={openAddStudentModal}/>
-                </div>
-
-            }
+            <Table
+                style={{backgroundColor:"#23395d",color:"white"}}
+                dataSource={students}
+                columns={columns}
+                rowKey='studentId'
+                loading={loading}
+                bordered={true}
+            />
+            {createStudentElement()}
         </Container>
-
     );
 }
