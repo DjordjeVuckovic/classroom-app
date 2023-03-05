@@ -1,11 +1,14 @@
 package com.studycode.classroombe.student;
 
 import com.studycode.classroombe.common.EmailValidator;
+import com.studycode.classroombe.course.StudentCourseDto;
 import com.studycode.classroombe.exception.ApiRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
+
 @Service
 @AllArgsConstructor
 public class StudentService {
@@ -18,11 +21,15 @@ public class StudentService {
      void addNewStudent(Student student) {
 
         if(!emailValidator.test(student.getEmail())){
-            throw new ApiRequestException(student.getEmail() + " is not valid");
+            throw new ApiRequestException(student.getEmail() + " is not valid.");
+        }
+        if(studentDataAccessService.isEmailTaken(student.getEmail())){
+            throw new ApiRequestException(student.getEmail() + " is already taken.");
         }
         studentDataAccessService.insertStudent(student);
     }
-    private void isEmailAlreadyExists(String email){
 
+     List<StudentCourseDto> getAllStudentCourses(String studentId) {
+        return studentDataAccessService.selectAllStudentCourses(UUID.fromString(studentId));
     }
 }

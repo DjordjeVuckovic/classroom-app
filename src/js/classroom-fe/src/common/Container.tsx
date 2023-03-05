@@ -2,7 +2,7 @@ import React from "react";
 
 export const Container = ({children}) => {
     return (
-        <div style={{width: '1400px', margin: '0 auto'}}>
+        <div style={{margin: '0 auto',width:"1000px"}}>
             {children}
         </div>
     );

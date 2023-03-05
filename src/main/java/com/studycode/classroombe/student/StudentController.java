@@ -1,5 +1,6 @@
 package com.studycode.classroombe.student;
 
+import com.studycode.classroombe.course.StudentCourseDto;
 import com.studycode.classroombe.exception.ApiRequestException;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +10,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import javax.validation.Valid;
 import java.net.URI;
 import java.util.List;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("students")
@@ -30,11 +30,14 @@ public class StudentController {
                 .lastName(studentDto.getLastName())
                 .firstName(studentDto.getLastName())
                 .gender(Gender.valueOf(studentDto.getGender().toUpperCase()))
-                .studentId(UUID.randomUUID())
                 .build();
         studentService.addNewStudent(student);
-        URI location = uriBuilder.path("/users/{id}").buildAndExpand(student.getStudentId()).toUri();
+        URI location = uriBuilder.path("/students/{id}").buildAndExpand(student.getId()).toUri();
         return ResponseEntity.created(location).build();
+    }
+    @GetMapping(path="{studentId}/course")
+    public List<StudentCourseDto> getAllStudentCourses(@PathVariable("studentId") String studentId){
+        return studentService.getAllStudentCourses(studentId);
     }
 
 }

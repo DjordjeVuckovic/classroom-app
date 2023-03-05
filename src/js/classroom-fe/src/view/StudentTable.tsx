@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from "react";
 import {getAllStudents} from "../client/StudentClient";
-import {IStudent} from "./Student";
+import {IStudent} from "../student/Student";
 import {Table, Spin, Modal, Empty} from "antd";
 import {Container} from "../common/Container";
-import {Footer} from "./Footer";
-import {AddStudentForm} from "./AddStudentForm";
+import {Footer} from "../components/Footer";
+import {AddStudentForm} from "../components/AddStudentForm";
 import {errorNotification} from "../common/Notification";
 
 export const StudentTable = () => {
@@ -89,7 +89,7 @@ export const StudentTable = () => {
     return (
         <Container>
             <Table
-                style={{backgroundColor:"#23395d",color:"white"}}
+                style={{backgroundColor:"rgb(0,21,41)",color:"white"}}
                 dataSource={students}
                 columns={columns}
                 rowKey='studentId'
